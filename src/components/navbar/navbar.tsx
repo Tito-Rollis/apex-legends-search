@@ -10,14 +10,14 @@ interface Props {
 export const Navbar = ({ role, clickHandler }: Props) => {
     return (
         <nav className="bg-[#161616]">
-            <ul className="flex justify-center items-center text-white font-satoshi-reg">
+            <ul className="flex justify-center items-center text-white font-custom font-normal">
                 {NavLinks.map((link) => {
                     return (
                         <li
                             onClick={() => clickHandler(link)}
                             className="h-14 px-4 flex items-center cursor-pointer hover:bg-black transition-all relative"
                         >
-                            <h1>{link}</h1>
+                            <h1 className="font-satoshi-reg text-white opacity-[0.9] tracking-wide">{link}</h1>
                             <div
                                 className={`h-[5px] ${
                                     role === link ? 'w-full' : 'w-0'
