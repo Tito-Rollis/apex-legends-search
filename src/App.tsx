@@ -6,17 +6,38 @@ import { Card } from './components/card/card';
 
 import './index.css';
 
-import { LegendsData } from './services/types';
+import { LegendsData } from './types';
 import { SearchBar } from './components/searchBar/searchBar';
+import { Modal } from './components/modal/modal';
 
 function App() {
     const [role, setRole] = useState('All');
     const [search, setSearch] = useState<string>('');
+    const [openModal, setOpenModal] = useState<boolean>(false);
+    const [selectedCard, setSelectedCard] = useState<LegendsData | undefined>({
+        displayName: '',
+        description: '',
+        displayIcon: '',
+        fullPortrait: '',
+        role: '',
+        abilities: [],
+        video: '',
+    });
     const [legendsData, setLegendsData] = useState<LegendsData[]>([]);
     const { data } = GetAllLegendsSwr();
 
     const roleClickHandler = (role: string) => setRole(role);
     const searchHandler = (value: string) => setSearch(value);
+    const cardSelectHandler = (name: string) => {
+        setOpenModal(true);
+        if (data) {
+            setSelectedCard(data.find((e) => e.displayName === name));
+        }
+    };
+
+    const closeModalHandler = (close: boolean) => {
+        setOpenModal(close);
+    };
 
     useEffect(() => {
         if (data) {
@@ -61,14 +82,19 @@ function App() {
                 <Navbar role={role} clickHandler={roleClickHandler} />
 
                 {/* Content */}
-                <div className="flex flex-col gap-y-16 pt-8 bg-[url('./yellow-bg.jpg')]">
+                <div className="flex flex-col relative gap-y-16 pt-8 bg-[url('./yellow-bg.jpg')]">
+                    {/* Modal */}
+                    {openModal && <Modal clickHandler={closeModalHandler} data={selectedCard} />}
+
                     {/* Search Bar */}
                     <SearchBar clickHandler={searchHandler} />
 
                     {/* Cards */}
                     <div className="flex flex-wrap justify-center gap-x-7 mx-8">
                         {legendsData ? (
-                            legendsData.map((el) => <Card img={el.fullPortrait} name={el.displayName} />)
+                            legendsData.map((el) => (
+                                <Card clickHandler={cardSelectHandler} img={el.fullPortrait} name={el.displayName} />
+                            ))
                         ) : (
                             <h1>Loading</h1>
                         )}

@@ -1,5 +1,5 @@
 import { api, handleResponse, handleError } from '../api';
-import { LegendsData } from '../types';
+import { LegendsData } from '../../types';
 import useSWR from 'swr';
 
 async function getAllLegends(url: string) {
