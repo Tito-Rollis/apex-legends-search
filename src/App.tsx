@@ -1,20 +1,41 @@
 import { useEffect, useState } from 'react';
-import './index.css';
+
 import { Navbar } from './components/navbar/navbar';
 import { GetAllLegendsSwr } from './services/Legends/get';
 import { Card } from './components/card/card';
 
-import { DUMMY_DATA } from './DUMMY_DATA';
+import './index.css';
+
 import { LegendsData } from './services/types';
+import { SearchBar } from './components/searchBar/searchBar';
 
 function App() {
     const [role, setRole] = useState('All');
+    const [search, setSearch] = useState<string>('');
     const [legendsData, setLegendsData] = useState<LegendsData[]>([]);
-    const roleClickHandler = (role: string) => setRole(role);
     const { data } = GetAllLegendsSwr();
+
+    const roleClickHandler = (role: string) => setRole(role);
+    const searchHandler = (value: string) => setSearch(value);
+
     useEffect(() => {
-        setLegendsData(DUMMY_DATA);
-    }, []);
+        if (data) {
+            // If search value is empty
+            if (search === '') {
+                return setLegendsData(role === 'All' ? data : data.filter((e) => e.role === role));
+            }
+            // If search value is set
+            if (search !== '') {
+                return setLegendsData(
+                    data.filter((e) => {
+                        setRole(e.role);
+                        return e.displayName.toLowerCase() === search?.toLowerCase();
+                    })
+                );
+            }
+        }
+    }, [data, role, search]);
+
     return (
         <>
             <head>
@@ -35,16 +56,23 @@ function App() {
                         their unique set of skills can do for your squad.
                     </p>
                 </div>
-                {/* NAVBAR */}
+
+                {/* Navbar */}
                 <Navbar role={role} clickHandler={roleClickHandler} />
 
-                {/* Cards */}
-                <div className="flex flex-wrap justify-between mx-8">
-                    {legendsData ? (
-                        legendsData.map((el) => <Card img={el.fullPortrait} name={el.displayName} />)
-                    ) : (
-                        <h1>Loading</h1>
-                    )}
+                {/* Content */}
+                <div className="flex flex-col gap-y-16 pt-8 bg-[url('./yellow-bg.jpg')]">
+                    {/* Search Bar */}
+                    <SearchBar clickHandler={searchHandler} />
+
+                    {/* Cards */}
+                    <div className="flex flex-wrap justify-center gap-x-7 mx-8">
+                        {legendsData ? (
+                            legendsData.map((el) => <Card img={el.fullPortrait} name={el.displayName} />)
+                        ) : (
+                            <h1>Loading</h1>
+                        )}
+                    </div>
                 </div>
             </div>
         </>

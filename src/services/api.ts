@@ -4,15 +4,11 @@ export const api = axios.create({
     baseURL: 'https://staging.ina17.com',
 });
 
-export interface Response<T> {
-    data?: T;
-}
-
 export function handleResponse<T>(res: AxiosResponse<T>): T {
     return res.data;
 }
 
-export function handleError(error: AxiosError<Response<any>>) {
+export function handleError(error: AxiosError<any>) {
     if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
